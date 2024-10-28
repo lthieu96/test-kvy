@@ -2,14 +2,15 @@ import React from 'react';
 import { cn } from '@nextui-org/react';
 
 import ProductItem from './product-item';
-import products from '../product';
+import { Product } from '../types/product';
 
 export type ProductGridProps = React.HTMLAttributes<HTMLDivElement> & {
 	itemClassName?: string;
+	products: Product[];
 };
 
 const ProductsGrid = React.forwardRef<HTMLDivElement, ProductGridProps>(
-	({ itemClassName, className, ...props }, ref) => {
+	({ products, itemClassName, className, ...props }, ref) => {
 		return (
 			<div
 				ref={ref}

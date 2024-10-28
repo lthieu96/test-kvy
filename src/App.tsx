@@ -1,30 +1,46 @@
 import ProductsGrid from './components/product-grid';
 import Header from './components/header';
-import { CheckboxGroup, Input, Select, SelectItem } from '@nextui-org/react';
+import {
+	CheckboxGroup,
+	Input,
+	Select,
+	SelectItem,
+	Spinner,
+} from '@nextui-org/react';
 import { Icon } from '@iconify/react';
 import PopoverFilterWrapper from './components/popover-filter-wrapper';
 import TagItem from './components/tag-item';
 import RatingRadioGroup from './components/rating-group';
 import PriceSlider from './components/price-slider';
+import { useCategories, useProducts } from './service/queries';
 
 function App() {
+	const { data: products, isLoading: productsLoading } = useProducts();
+	const { data: categories, isLoading: categoriesLoading } = useCategories();
+
 	return (
 		<>
 			<Header />
+
 			<div className="mx-auto my-4 flex h-full w-full max-w-7xl flex-col gap-4 px-2 lg:px-24">
-				<div className="relative flex flex-col gap-2 rounded-medium bg-default-50 px-4 pb-3 pt-2 md:flex-row md:justify-between md:gap-0 md:pt-3">
+				<div className="relative flex flex-col gap-2 rounded-medium bg-default-50 px-4 pb-3 pt-2 md:flex-row md:justify-between md:pt-3">
 					<Input
 						isClearable
 						radius="lg"
 						variant="bordered"
 						placeholder="Search..."
 						startContent={<Icon icon="solar:magnifer-broken" />}
-						className="md:max-w-sm"
+						className="md:max-w-xs"
 					/>
 					<div className="flex flex-wrap gap-2">
 						<PopoverFilterWrapper title="Pricing Range">
 							<PriceSlider
-								range={{ min: 0, max: 5000, step: 1, defaultValue: [0, 5000] }}
+								range={{
+									min: 0,
+									max: 5000,
+									step: 1,
+									defaultValue: [0, 5000],
+								}}
 							/>
 						</PopoverFilterWrapper>
 
@@ -38,10 +54,17 @@ function App() {
 								className="gap-1"
 								orientation="horizontal"
 							>
-								<TagItem value="sneakers">Sneakers</TagItem>
-								<TagItem value="boots">Boots</TagItem>
-								<TagItem value="sandals">Sandals</TagItem>
-								<TagItem value="slippers">Slippers</TagItem>
+								{categoriesLoading && (
+									<Spinner size="sm" className="my-4 w-full" />
+								)}
+
+								{categories?.map((category) => (
+									<TagItem key={category} value={category}>
+										{category}
+									</TagItem>
+								))}
+
+								{categories?.length === 0 && 'No categories found'}
 							</CheckboxGroup>
 						</PopoverFilterWrapper>
 
@@ -72,7 +95,16 @@ function App() {
 					</div>
 				</div>
 				<main className="h-full w-full overflow-visible px-1">
-					<ProductsGrid className="grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" />
+					{productsLoading && <Spinner size="md" className="mt-4 w-full" />}
+
+					{products && (
+						<ProductsGrid
+							products={products}
+							className="grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+						/>
+					)}
+
+					{products?.length === 0 && 'No products found'}
 				</main>
 			</div>
 		</>

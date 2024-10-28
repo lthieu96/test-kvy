@@ -4,6 +4,9 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { NextUIProvider } from '@nextui-org/react';
 import App from './App';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const root = ReactDOM.createRoot(
 	document.getElementById('root') as HTMLElement,
@@ -11,7 +14,9 @@ const root = ReactDOM.createRoot(
 root.render(
 	<React.StrictMode>
 		<NextUIProvider>
-			<App />
+			<QueryClientProvider client={queryClient}>
+				<App />
+			</QueryClientProvider>
 		</NextUIProvider>
 	</React.StrictMode>,
 );

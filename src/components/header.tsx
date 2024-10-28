@@ -12,8 +12,12 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from '@nextui-org/react';
+import { useCartStore } from '../store/cart-store';
+import CartSummary from './card-sumary';
 
 const Header = () => {
+	const { items, removeAll } = useCartStore();
+
 	return (
 		<Navbar height="60px">
 			<NavbarBrand>
@@ -32,7 +36,7 @@ const Header = () => {
 						>
 							<Badge
 								color="danger"
-								content={50}
+								content={items.length ? items.length : undefined}
 								isInvisible={false}
 								shape="circle"
 							>
@@ -45,10 +49,20 @@ const Header = () => {
 					</PopoverTrigger>
 					<PopoverContent className="w-[90vw] p-0 sm:max-w-[380px]">
 						<Card className="w-full max-w-[420px]">
-							<CardHeader>
+							<CardHeader className="flex items-center justify-between">
 								<h4 className="text-medium font-bold">Shopping Cart</h4>
+								<Button
+									variant="light"
+									size="sm"
+									color="danger"
+									onPress={removeAll}
+								>
+									Clear all
+								</Button>
 							</CardHeader>
-							<CardBody>No products selected yet</CardBody>
+							<CardBody>
+								<CartSummary />
+							</CardBody>
 						</Card>
 					</PopoverContent>
 				</Popover>

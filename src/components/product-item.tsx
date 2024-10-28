@@ -4,6 +4,7 @@ import { cn } from '@nextui-org/react';
 
 import RatingRadioGroup from './rating-group';
 import { Product } from '../types/product';
+import { useCartStore } from '../store/cart-store';
 
 export type ProductItemProps = React.HTMLAttributes<HTMLDivElement> & {
 	product: Product;
@@ -11,7 +12,8 @@ export type ProductItemProps = React.HTMLAttributes<HTMLDivElement> & {
 
 const ProductItem = React.forwardRef<HTMLDivElement, ProductItemProps>(
 	({ product, className, ...props }, ref) => {
-		const { title, price, rating, description, image } = product;
+		const { id, title, price, rating, description, image } = product;
+		const { addItem } = useCartStore();
 
 		return (
 			<div
@@ -63,6 +65,7 @@ const ProductItem = React.forwardRef<HTMLDivElement, ProductItemProps>(
 							className="font-medium"
 							color="primary"
 							radius="lg"
+							onClick={() => addItem(product)}
 						>
 							Add to cart
 						</Button>
