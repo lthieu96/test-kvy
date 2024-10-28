@@ -8,12 +8,13 @@ import RatingRadioItem from './rating-item';
 
 export type RatingRadioGroupProps = RadioGroupProps & {
 	hideStarsText?: boolean;
+	onValueChange?: (value: string) => void;
 };
 
 const RatingRadioGroup = React.forwardRef<
 	HTMLDivElement,
 	RatingRadioGroupProps
->(({ className, label, hideStarsText, ...props }, ref) => {
+>(({ className, label, hideStarsText, onValueChange, ...props }, ref) => {
 	const [value, setValue] = React.useState('1');
 	const starsText = React.useMemo(() => {
 		if (value === '5') {
@@ -31,7 +32,10 @@ const RatingRadioGroup = React.forwardRef<
 				{...props}
 				defaultValue="1"
 				orientation="horizontal"
-				onValueChange={setValue}
+				onValueChange={(v) => {
+					setValue(v);
+					typeof onValueChange === 'function' && onValueChange(v);
+				}}
 			>
 				<RatingRadioItem value="1" />
 				<RatingRadioItem value="2" />

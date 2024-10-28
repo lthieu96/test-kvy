@@ -1,10 +1,10 @@
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { getCategories, getProduct, getProducts } from './fetchers';
 
-export const useProducts = () => {
+export const useProducts = (query: string) => {
 	return useQuery({
-		queryKey: ['products'],
-		queryFn: getProducts,
+		queryKey: ['products', query],
+		queryFn: () => getProducts(query),
 	});
 };
 

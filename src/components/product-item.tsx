@@ -12,7 +12,7 @@ export type ProductItemProps = React.HTMLAttributes<HTMLDivElement> & {
 
 const ProductItem = React.forwardRef<HTMLDivElement, ProductItemProps>(
 	({ product, className, ...props }, ref) => {
-		const { id, title, price, rating, description, image } = product;
+		const { title, price, rating, description, image } = product;
 		const { addItem } = useCartStore();
 
 		return (

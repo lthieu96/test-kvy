@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { NextUIProvider } from '@nextui-org/react';
 import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,7 @@ root.render(
 		<NextUIProvider>
 			<QueryClientProvider client={queryClient}>
 				<App />
+				<ReactQueryDevtools initialIsOpen={false} />
 			</QueryClientProvider>
 		</NextUIProvider>
 	</React.StrictMode>,

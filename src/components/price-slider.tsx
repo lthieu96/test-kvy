@@ -12,6 +12,7 @@ export type RangeFilter = {
 
 export type PriceSliderProps = Omit<SliderProps, 'ref'> & {
 	range?: RangeFilter;
+	onValueChange?: (value: RangeValue) => void;
 };
 
 function clampValue(value: number, min: number, max: number) {
@@ -19,38 +20,51 @@ function clampValue(value: number, min: number, max: number) {
 }
 
 const PriceSlider = React.forwardRef<HTMLDivElement, PriceSliderProps>(
-	({ range, className, ...props }, ref) => {
-		const defaultValue = React.useMemo<RangeValue>(
-			() => range?.defaultValue || [0, 1000],
-			[range?.defaultValue],
+	({ range, onValueChange, className, ...props }, ref) => {
+		const defaultRange = React.useMemo(
+			() => ({
+				min: range?.min ?? 0,
+				max: range?.max ?? 1000,
+				defaultValue: range?.defaultValue ?? [0, 1000],
+				step: range?.step ?? 1,
+			}),
+			[range],
 		);
 
-		const [value, setValue] = React.useState<RangeValue>(defaultValue);
+		const [value, setValue] = React.useState<RangeValue>(
+			defaultRange.defaultValue,
+		);
+
+		const handleValueChange = React.useCallback(
+			(newValue: RangeValue) => {
+				setValue(newValue);
+				typeof onValueChange === 'function' && onValueChange(newValue);
+			},
+			[onValueChange],
+		);
 
 		const onMinInputValueChange = React.useCallback(
 			(inputValue: string) => {
 				const newValue = Number(inputValue);
-				const minValue = range?.min ?? defaultValue[0];
 
 				if (!isNaN(newValue)) {
-					const clampedValue = clampValue(newValue, minValue, value[1]);
+					const clampedValue = clampValue(newValue, defaultRange.min, value[1]);
 
-					setValue([clampedValue, value[1]]);
+					handleValueChange([clampedValue, value[1]]);
 				}
 			},
-			[value, range?.min, defaultValue],
+			[value, range?.min, defaultRange],
 		);
 
 		const onMaxInputValueChange = React.useCallback(
 			(inputValue: string) => {
 				const newValue = Number(inputValue);
-				const maxValue = range?.max ?? defaultValue[1];
 
-				if (!isNaN(newValue) && newValue <= maxValue) {
-					setValue([value[0], newValue]);
+				if (!isNaN(newValue) && newValue <= defaultRange.max) {
+					handleValueChange([value[0], newValue]);
 				}
 			},
-			[value, range?.max, defaultValue],
+			[value, range?.max, defaultRange],
 		);
 
 		return (
@@ -66,8 +80,9 @@ const PriceSlider = React.forwardRef<HTMLDivElement, PriceSliderProps>(
 						step={range?.step}
 						value={value}
 						onChange={(value) => {
-							setValue(value as RangeValue);
+							handleValueChange(value as RangeValue);
 						}}
+						aria-label="Price Range"
 					/>
 				</div>
 				<div className="flex items-center">
