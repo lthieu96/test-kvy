@@ -3,6 +3,7 @@ import Header from './components/header';
 import {
 	CheckboxGroup,
 	Input,
+	Pagination,
 	Select,
 	SelectItem,
 	Spinner,
@@ -40,6 +41,7 @@ function App() {
 		PRICE_RANGE.MIN,
 		PRICE_RANGE.MAX,
 	]);
+	const [page, setPage] = useState(1);
 
 	const queryString = useMemo(() => {
 		const params = new URLSearchParams();
@@ -51,29 +53,19 @@ function App() {
 		if (sortBy) params.set('sort', sortBy);
 		params.set('min_price', String(priceRange[0]));
 		params.set('max_price', String(priceRange[1]));
+		setPage(1);
 
 		return params.toString();
 	}, [searchQuery, selectedCategories, selectedRating, sortBy, priceRange]);
 
-	const { data: products, isLoading: productsLoading } = useProducts(
-		queryString.toString(),
+	const { data, isLoading: productsLoading } = useProducts(
+		`${queryString}&page=${page}`,
 	);
+
 	const { data: categories, isLoading: categoriesLoading } = useCategories();
 
 	const debouncedSetPriceRange = useDebounceCallback(setPriceRange, 500);
 	const debouncedSetSearchQuery = useDebounceCallback(setSearchQuery, 300);
-
-	// const handlePriceRangeCancel = () => {
-	// 	const params = new URLSearchParams(queryString);
-	// 	setPriceRange([
-	// 		parseInt(params.get('min_price') || String(PRICE_RANGE.MIN), 10),
-	// 		parseInt(params.get('max_price') || String(PRICE_RANGE.MAX), 10),
-	// 	]);
-	// };
-
-	// const handlePriceRangeApply = (newRange: [number, number]) => {
-	// 	setPriceRange(newRange);
-	// };
 
 	return (
 		<>
@@ -159,14 +151,24 @@ function App() {
 				<main className="h-full w-full overflow-visible px-1">
 					{productsLoading && <Spinner size="md" className="mt-4 w-full" />}
 
-					{products?.length ? (
-						<ProductsGrid
-							products={products}
-							className="grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-						/>
+					{data?.items?.length ? (
+						<div className="flex min-h-full flex-col items-center justify-between gap-4">
+							<ProductsGrid
+								products={data.items}
+								className="grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+							/>
+							<Pagination
+								total={data.pagination.totalPages}
+								initialPage={page}
+								onChange={(v) => {
+									window.scrollTo(0, 0);
+									setPage(v);
+								}}
+							/>
+						</div>
 					) : null}
 
-					{products?.length === 0 && 'No products found'}
+					{data?.items?.length === 0 && 'No products found'}
 				</main>
 			</div>
 		</>

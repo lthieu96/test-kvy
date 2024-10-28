@@ -4,10 +4,6 @@ import { apiClient } from './api-client';
 export const getProducts = async (query?: string) => {
 	const response = await apiClient.get<Product[]>('/products');
 
-	if (!query) {
-		return response.data;
-	}
-
 	const queryObject = new URLSearchParams(query);
 	const search = queryObject.get('search');
 	const maxPrice = parseInt(queryObject.get('max_price') || '5000', 10);
@@ -54,7 +50,29 @@ export const getProducts = async (query?: string) => {
 		});
 	}
 
-	return filteredProducts;
+	let page = parseInt(queryObject.get('page') || '1', 10);
+	const pageSize = parseInt(queryObject.get('page_size') || '8', 10);
+	const totalPages = Math.ceil(filteredProducts.length / pageSize);
+	if (page > totalPages) {
+		page = totalPages;
+	}
+
+	const startIndex = (page - 1) * pageSize;
+	const endIndex = startIndex + pageSize;
+
+	const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+	const responseWithPagination = {
+		items: paginatedProducts,
+		pagination: {
+			page,
+			pageSize,
+			totalPages,
+			total: filteredProducts.length,
+		},
+	};
+
+	return responseWithPagination;
 };
 
 export const getProduct = async (id: number) => {

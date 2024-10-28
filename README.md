@@ -1,46 +1,66 @@
-# Getting Started with Create React App
+## Technical Approach & Architecture
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Tech Stack Selection
 
-## Available Scripts
+- **Create React App with TypeScript**: For type safety and better developer experience
+- **NextUI**: Modern UI component library for rapid development
+- **Zustand**: Lightweight state management for cart functionality
+- **React Query**: For efficient data fetching and caching
+- **Axios**: For HTTP requests
+- **Tailwind CSS**: For responsive and customizable styling
 
-In the project directory, you can run:
+### Core Features Implementation
 
-### `yarn start`
+##### Product Listing & Filtering
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Implemented a responsive grid layout using NextUI components
+- Created reusable filter components:
+  - Price range slider with debounced updates
+  - Category selection with checkboxes
+  - Rating filter with custom star rating component
+  - Search functionality with debounced input
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+##### Shopping Cart
 
-### `yarn test`
+- Used Zustand with persistence middleware for cart state management
+- Implemented cart operations:
+  - Add/remove items
+  - Update quantities
+  - Calculate totals
+  - Persist cart data in `localStorage`
+- Store productId and quantity in the cart, and utilize useQueries to fetch product data concurrently, optimizing performance.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+##### Data Management
 
-### `yarn build`
+- Utilized React Query for:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  - Caching product data
+  - Optimistic updates
+  - Loading states
+  - Error handling
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+##### Responsive Design
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Mobile-First Approach**: Ensured the application is fully responsive, providing a seamless experience across various devices and screen sizes by utilizing Tailwind CSS's utility classes and responsive design principles.
 
-### `yarn eject`
+### Performance Optimizations
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- Debounced search and filter inputs
+- Memoized expensive calculations using useMemo
+- Implemented proper component splitting for better maintainability
+- Used React Query's built-in caching to minimize API calls
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Component Structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+src/
+├── components/ # Reusable UI components
+├── service/ # API and data fetching logic
+├── store/ # Zustand store configurations
+├── types/ # TypeScript interfaces
+└── utils/ # Helper functions
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+#### Challenges and Solutions
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Filters, sorting, and pagination logic will be handled on the backend because applying filters and sorting on the frontend with pagination leads to inaccurate results, but Fake Store API not supported for now. So I refined data fetched from the Fake Store API `getProducts` in [`src/service/fetchers`](src/service/fetchers).
